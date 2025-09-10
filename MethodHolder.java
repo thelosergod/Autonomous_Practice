@@ -24,7 +24,7 @@ public class MethodHolder {
 
     public void update() {
 
-        double Distance2 = Distance * 505.316944317;
+        double Distance2 = Distance * 336.7;
 
         double currentDistance = yOdometry.getCurrentPosition();
         double currentDirection = (xOdometry.getCurrentPosition() - yOdometry.getCurrentPosition()) / 1000.0;
@@ -52,4 +52,5 @@ public class MethodHolder {
         right_rear.setPower(rightRearPower);
     }
 }
+
 
