@@ -4,7 +4,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
-@Autonomous(name="2-Pod Odometry Correction")
+@Autonomous(name="2-Odometry-Pod")
 public class AutonomousPractice extends LinearOpMode {
 
     @Override
@@ -31,3 +31,4 @@ public class AutonomousPractice extends LinearOpMode {
         }
     }
 }
+
