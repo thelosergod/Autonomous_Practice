@@ -22,7 +22,7 @@ public class AutonomousPractice extends LinearOpMode {
 
         waitForStart();
 
-        while (opModeIsActive()) {
+        while (distanceError !<0) {
             goForward.update();
 
             telemetry.addData("X Odometry", xOdometry.getCurrentPosition());
@@ -31,5 +31,6 @@ public class AutonomousPractice extends LinearOpMode {
         }
     }
 }
+
 
 
