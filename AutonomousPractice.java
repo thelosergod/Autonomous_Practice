@@ -18,7 +18,7 @@ public class AutonomousPractice extends LinearOpMode {
         DcMotor yOdometry = hardwareMap.get(DcMotor.class, "Y-Axis OdometryPod");
 
         MethodHolder goForward = new MethodHolder(left_front_motor, right_front_motor, left_rear_motor, right_rear_motor, xOdometry, yOdometry,
-                2000, 0);
+                12, 0);
 
         waitForStart();
 
@@ -31,4 +31,5 @@ public class AutonomousPractice extends LinearOpMode {
         }
     }
 }
+
 
