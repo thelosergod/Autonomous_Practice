@@ -23,6 +23,7 @@ public class AutonomousPractice extends LinearOpMode {
         waitForStart();
 
         // 🔥 ADD/CHANGE COMMANDS HERE — each one runs fully before the next starts
+        // The commands are .moveForward, .strafeRight, .moveBackward, .strafeLeft, .turnRight, and .turnLeft
         drive.moveForward(24);
         runUntilDone();
 
