@@ -3,35 +3,40 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import org.firstinspires.ftc.teamcode.Pinpoint;
 
-@Autonomous(name="2-Odometry-Pod")
+@Autonomous(name = "Pinpoint Auto")
 public class AutonomousPractice extends LinearOpMode {
 
     @Override
     public void runOpMode() {
-        DcMotor left_front_motor = hardwareMap.get(DcMotor.class, "Left Front Motor");
-        DcMotor left_rear_motor = hardwareMap.get(DcMotor.class, "Left Rear Motor");
-        DcMotor right_front_motor = hardwareMap.get(DcMotor.class, "Right Front Motor");
-        DcMotor right_rear_motor = hardwareMap.get(DcMotor.class, "Right Rear Motor");
 
-        DcMotor xOdometry = hardwareMap.get(DcMotor.class, "X-Axis OdometryPod");
-        DcMotor yOdometry = hardwareMap.get(DcMotor.class, "Y-Axis OdometryPod");
+        DcMotor lf = hardwareMap.get(DcMotor.class, "Left Front Motor");
+        DcMotor lr = hardwareMap.get(DcMotor.class, "Left Rear Motor");
+        DcMotor rf = hardwareMap.get(DcMotor.class, "Right Front Motor");
+        DcMotor rr = hardwareMap.get(DcMotor.class, "Right Rear Motor");
 
-        MethodHolder goForward = new MethodHolder(left_front_motor, right_front_motor, left_rear_motor, right_rear_motor, xOdometry, yOdometry,
-                12, 0);
+        // INIT PINPOINT
+        Pinpoint pinpoint = new Pinpoint(hardwareMap);
+
+        MethodHolder drive = new MethodHolder(lf, rf, lr, rr, pinpoint);
 
         waitForStart();
 
-        while (opModeIsActive) {
-            goForward.update();
+        // 🔥 RUN ONE COMMAND (change this to test)
+        drive.moveForward(24);
+        // drive.strafeRight(24);
+        // drive.turnRight(Math.toRadians(90));
 
-            telemetry.addData("X Odometry", xOdometry.getCurrentPosition());
-            telemetry.addData("Y Odometry", yOdometry.getCurrentPosition());
+        while (opModeIsActive()) {
+
+            pinpoint.update();   // ALWAYS update first
+            drive.update();
+
+            telemetry.addData("X", pinpoint.getX());
+            telemetry.addData("Y", pinpoint.getY());
+            telemetry.addData("Heading", Math.toDegrees(pinpoint.getHeading()));
             telemetry.update();
         }
     }
 }
-
-
-
-
