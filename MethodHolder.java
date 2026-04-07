@@ -2,55 +2,125 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
 
+// ⚠️ CHANGE THIS IMPORT if your Pinpoint class is elsewhere
+import org.firstinspires.ftc.teamcode.Pinpoint;
+
 public class MethodHolder {
-    private DcMotor left_front, right_front, left_rear, right_rear, xOdometry, yOdometry;
 
-    private double Distance, Direction;
+    private DcMotor lf, rf, lr, rr;
+    private Pinpoint pinpoint;
 
-    public MethodHolder(DcMotor left_front, DcMotor right_front, DcMotor left_rear, DcMotor right_rear, DcMotor xOdometry, DcMotor yOdometry,
-                        double Distance, double Direction) {
+    private double targetX;
+    private double targetY;
+    private double targetHeading;
 
-        this.left_front = left_front;
-        this.right_front = right_front;
-        this.left_rear = left_rear;
-        this.right_rear = right_rear;
+    private boolean turningOnly = false;
 
-        this.xOdometry = xOdometry;
-        this.yOdometry = yOdometry;
+    public MethodHolder(DcMotor lf, DcMotor rf, DcMotor lr, DcMotor rr,
+                        Pinpoint pinpoint) {
 
-        this.Distance = Distance;
-        this.Direction = Direction;
+        this.lf = lf;
+        this.rf = rf;
+        this.lr = lr;
+        this.rr = rr;
+
+        this.pinpoint = pinpoint;
+
+        // initialize targets to current pose
+        targetX = pinpoint.getX();
+        targetY = pinpoint.getY();
+        targetHeading = pinpoint.getHeading();
     }
+
+    // =========================
+    // COMMANDS
+    // =========================
+
+    public void moveForward(double inches) {
+        targetX = pinpoint.getX();
+        targetY = pinpoint.getY() + inches;
+        targetHeading = pinpoint.getHeading();
+        turningOnly = false;
+    }
+
+    public void moveBackward(double inches) {
+        moveForward(-inches);
+    }
+
+    public void strafeRight(double inches) {
+        targetX = pinpoint.getX() + inches;
+        targetY = pinpoint.getY();
+        targetHeading = pinpoint.getHeading();
+        turningOnly = false;
+    }
+
+    public void strafeLeft(double inches) {
+        strafeRight(-inches);
+    }
+
+    public void turnRight(double radians) {
+        targetHeading = pinpoint.getHeading() + radians;
+        turningOnly = true;
+    }
+
+    public void turnLeft(double radians) {
+        turnRight(-radians);
+    }
+
+    // =========================
+    // UPDATE LOOP
+    // =========================
 
     public void update() {
 
-        double Distance2 = Distance * 336.7;
+        double currentX = pinpoint.getX();
+        double currentY = pinpoint.getY();
+        double currentHeading = pinpoint.getHeading();
 
-        double currentDistance = yOdometry.getCurrentPosition();
-        double currentDirection = (xOdometry.getCurrentPosition() - yOdometry.getCurrentPosition()) / 1000.0;
+        double errorX = targetX - currentX;
+        double errorY = targetY - currentY;
+        double errorHeading = angleWrap(targetHeading - currentHeading);
 
-        double distanceError = Distance2 - currentDistance;
-        double headingError = Direction - currentDirection;
+        double kpXY = 0.05;
+        double kpTurn = 0.8;
 
-        double kpDistance = 0.005;
-        double kpHeading = 0.01;
+        double strafe = clamp(errorX * kpXY, -0.6, 0.6);
+        double forward = clamp(errorY * kpXY, -0.6, 0.6);
+        double turn = clamp(errorHeading * kpTurn, -0.5, 0.5);
 
-        double forward = distanceError * kpDistance;
-        double turn = headingError * kpHeading;
+        if (turningOnly) {
+            forward = 0;
+            strafe = 0;
+        }
 
-        turn = Math.max(-0.3, Math.min(0.3, turn));
-        forward = Math.max(-0.5, Math.min(0.5, forward));
+        // MECANUM DRIVE
+        double lfPower = forward + strafe + turn;
+        double rfPower = forward - strafe - turn;
+        double lrPower = forward - strafe + turn;
+        double rrPower = forward + strafe - turn;
 
-        double leftFrontPower = forward + turn;
-        double leftRearPower = forward + turn;
-        double rightFrontPower = forward - turn;
-        double rightRearPower = forward - turn;
+        double max = Math.max(1.0,
+                Math.max(Math.abs(lfPower),
+                Math.max(Math.abs(rfPower),
+                Math.max(Math.abs(lrPower), Math.abs(rrPower)))));
 
-        left_front.setPower(leftFrontPower);
-        right_front.setPower(rightFrontPower);
-        left_rear.setPower(leftRearPower);
-        right_rear.setPower(rightRearPower);
+        lf.setPower(lfPower / max);
+        rf.setPower(rfPower / max);
+        lr.setPower(lrPower / max);
+        rr.setPower(rrPower / max);
+    }
+
+    // =========================
+    // HELPERS
+    // =========================
+
+    private double clamp(double val, double min, double max) {
+        return Math.max(min, Math.min(max, val));
+    }
+
+    private double angleWrap(double angle) {
+        while (angle > Math.PI) angle -= 2 * Math.PI;
+        while (angle < -Math.PI) angle += 2 * Math.PI;
+        return angle;
     }
 }
-
-
