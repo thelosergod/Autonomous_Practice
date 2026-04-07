@@ -11,6 +11,7 @@ public class AutonomousPractice extends LinearOpMode {
     @Override
     public void runOpMode() {
 
+        // Change the names of the motor to what you anemd your motor
         DcMotor lf = hardwareMap.get(DcMotor.class, "Left Front Motor");
         DcMotor lr = hardwareMap.get(DcMotor.class, "Left Rear Motor");
         DcMotor rf = hardwareMap.get(DcMotor.class, "Right Front Motor");
