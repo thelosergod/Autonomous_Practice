@@ -2,31 +2,21 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
 
-// ⚠️ CHANGE THIS IMPORT if your Pinpoint class is elsewhere
-import org.firstinspires.ftc.teamcode.Pinpoint;
-
 public class MethodHolder {
-
     private DcMotor lf, rf, lr, rr;
     private Pinpoint pinpoint;
-
     private double targetX;
     private double targetY;
     private double targetHeading;
-
     private boolean turningOnly = false;
 
     public MethodHolder(DcMotor lf, DcMotor rf, DcMotor lr, DcMotor rr,
                         Pinpoint pinpoint) {
-
         this.lf = lf;
         this.rf = rf;
         this.lr = lr;
         this.rr = rr;
-
         this.pinpoint = pinpoint;
-
-        // initialize targets to current pose
         targetX = pinpoint.getX();
         targetY = pinpoint.getY();
         targetHeading = pinpoint.getHeading();
@@ -35,7 +25,6 @@ public class MethodHolder {
     // =========================
     // COMMANDS
     // =========================
-
     public void moveForward(double inches) {
         targetX = pinpoint.getX();
         targetY = pinpoint.getY() + inches;
@@ -68,11 +57,23 @@ public class MethodHolder {
     }
 
     // =========================
+    // IS BUSY CHECK
+    // =========================
+    public boolean isBusy() {
+        double errorX = targetX - pinpoint.getX();
+        double errorY = targetY - pinpoint.getY();
+        double errorHeading = angleWrap(targetHeading - pinpoint.getHeading());
+
+        if (turningOnly) {
+            return Math.abs(errorHeading) > 0.05; // ~3 degrees tolerance
+        }
+        return Math.abs(errorX) > 0.5 || Math.abs(errorY) > 0.5; // ~0.5 inch tolerance
+    }
+
+    // =========================
     // UPDATE LOOP
     // =========================
-
     public void update() {
-
         double currentX = pinpoint.getX();
         double currentY = pinpoint.getY();
         double currentHeading = pinpoint.getHeading();
@@ -93,7 +94,6 @@ public class MethodHolder {
             strafe = 0;
         }
 
-        // MECANUM DRIVE
         double lfPower = forward + strafe + turn;
         double rfPower = forward - strafe - turn;
         double lrPower = forward - strafe + turn;
@@ -111,9 +111,18 @@ public class MethodHolder {
     }
 
     // =========================
+    // STOP
+    // =========================
+    public void stop() {
+        lf.setPower(0);
+        rf.setPower(0);
+        lr.setPower(0);
+        rr.setPower(0);
+    }
+
+    // =========================
     // HELPERS
     // =========================
-
     private double clamp(double val, double min, double max) {
         return Math.max(min, Math.min(max, val));
     }
