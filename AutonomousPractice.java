@@ -17,8 +17,9 @@ public class AutonomousPractice extends LinearOpMode {
         DcMotor rf = hardwareMap.get(DcMotor.class, "Right Front Motor");
         DcMotor rr = hardwareMap.get(DcMotor.class, "Right Rear Motor");
 
-        // INIT PINPOINT
-        Pinpoint pinpoint = new Pinpoint(hardwareMap);
+        // INIT PINPOIN
+        Pinpoint pinpoint = hardwareMap.get(GoBildaPinpointDriver.class, "pinpoint");
+
 
         MethodHolder drive = new MethodHolder(lf, rf, lr, rr, pinpoint);
 
