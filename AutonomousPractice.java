@@ -3,42 +3,46 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import org.firstinspires.ftc.teamcode.Pinpoint;
 
 @Autonomous(name = "Pinpoint Auto")
 public class AutonomousPractice extends LinearOpMode {
 
+    private Pinpoint pinpoint;
+    private MethodHolder drive;
+
     @Override
     public void runOpMode() {
-
-        // Change the names of the motor to what you anemd your motor
         DcMotor lf = hardwareMap.get(DcMotor.class, "Left Front Motor");
         DcMotor lr = hardwareMap.get(DcMotor.class, "Left Rear Motor");
         DcMotor rf = hardwareMap.get(DcMotor.class, "Right Front Motor");
         DcMotor rr = hardwareMap.get(DcMotor.class, "Right Rear Motor");
 
-        // INIT PINPOIN
-        Pinpoint pinpoint = newPinpoint(hardwareMap);
-
-
-        MethodHolder drive = new MethodHolder(lf, rf, lr, rr, pinpoint);
+        pinpoint = new Pinpoint(hardwareMap);
+        drive = new MethodHolder(lf, rf, lr, rr, pinpoint);
 
         waitForStart();
 
-        // 🔥 RUN ONE COMMAND (change this to test)
+        // 🔥 ADD/CHANGE COMMANDS HERE — each one runs fully before the next starts
         drive.moveForward(24);
-        // drive.strafeRight(24);
+        runUntilDone();
+
+        // drive.strafeRight(12);
+        // runUntilDone();
+
         // drive.turnRight(Math.toRadians(90));
+        // runUntilDone();
+    }
 
-        while (opModeIsActive()) {
-
-            pinpoint.update();   // ALWAYS update first
+    // Runs the drive loop until the current command is complete, then stops motors
+    private void runUntilDone() {
+        while (opModeIsActive() && drive.isBusy()) {
+            pinpoint.update();
             drive.update();
-
             telemetry.addData("X", pinpoint.getX());
             telemetry.addData("Y", pinpoint.getY());
             telemetry.addData("Heading", Math.toDegrees(pinpoint.getHeading()));
             telemetry.update();
         }
+        drive.stop();
     }
 }
